@@ -2,7 +2,6 @@ import java.sql.Statement;
 import java.util.Scanner;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class Main {
@@ -63,6 +62,8 @@ public class Main {
             String diagnosis = rs.getString("diagnosis");
             System.out.println("Id: " + id + ", Ten: " + fullName + ", Tuoi: " + age + ", Chuan doan: " + diagnosis);
         }
+        rs.close();
+        stmt.close();
     }
     public static void addPatient(String fullName, int age, String diagnosis) throws Exception {
         String insert = "INSERT INTO patients (full_name, age, diagnosis) VALUES ('" + fullName + "', " + age + ", '" + diagnosis + "');";
@@ -73,20 +74,19 @@ public class Main {
         } else {
             System.out.println("Them benh nhan that bai.");
         }
+        stmt.close();
     }
 
     public static void deletePatient(int id) throws Exception {
-        String deletePrepared = "DELETE FROM patients where id = ?;";
         String delete = "DELETE FROM patients where id = " + id + ";";
         Statement stmt = conn.createStatement();
-        PreparedStatement pstmt = conn.prepareStatement(deletePrepared);
-        pstmt.setInt(1, id);
-        int count = pstmt.executeUpdate();
+        int count = stmt.executeUpdate(delete);
         if (count > 0) {
             System.out.println("Benh nhan da duoc xoa thanh cong.");
         } else {
             System.out.println("Xoa benh nhan that bai.");
         }
+        stmt.close();
     }
 
     public static void initConnection() throws Exception {
@@ -95,6 +95,7 @@ public class Main {
         String password = "123456";
         conn = DriverManager.getConnection(url, user, password);
     }
+
     public static void closeConnection() {
         try {
             conn.close();
